@@ -15,6 +15,15 @@ return new class extends Migration
     {
         Schema::create('authors', function (Blueprint $table) {
             $table->id();
+            $table->string('name', 50);
+            $table->enum('gender', ['Male', 'Female']);
+            $table->date('birth_date');
+            $table->string('religion', 20);
+            $table->string('ethnic', 20);
+            $table->string('citizenship', 30);
+            $table->string('photo');
+            $table->text('hobbies');
+            $table->text('description');
             $table->timestamps();
         });
     }
