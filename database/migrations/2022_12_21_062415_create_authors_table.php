@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('religion', 20);
             $table->string('ethnic', 20);
             $table->string('citizenship', 30);
-            $table->string('photo', 100);
+            $table->string('photo', 255);
             $table->text('hobbies');
             $table->text('description');
             $table->timestamps();

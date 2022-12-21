@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('books', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
-            $table->tinyInteger('id_author');
-            $table->tinyInteger('id_category');
+            $table->bigInteger('id_author');
+            $table->bigInteger('id_category');
             $table->string('book_language', 20);
             $table->tinyInteger('total_pages');
             $table->text('sinopsis');
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('publisher', 100);
             $table->date('published_at');
             $table->string('isbn', 13);
-            $table->string('photo', 100);
+            $table->string('photo', 255);
             $table->text('description');
             $table->timestamps();
         });

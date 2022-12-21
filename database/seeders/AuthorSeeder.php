@@ -20,7 +20,7 @@ class AuthorSeeder extends Seeder
             'gender' => 'Male',
             'birth_date' => '1999-12-21',
             'religion' => 'Islam',
-            'ethnic' => '',
+            'ethnic' => 'Sunda',
             'citizenship' => 'Indonesia',
             'photo' => 'http://ini-url-photo.id/fulan',
             'hobbies' => 'Menulis',
