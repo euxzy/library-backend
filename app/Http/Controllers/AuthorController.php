@@ -11,6 +11,7 @@ class AuthorController extends Controller
 {
     public function store(Request $request)
     {
+        // validasi request yang diinputkan
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:50',
             'gender' => 'required',
@@ -23,6 +24,7 @@ class AuthorController extends Controller
             'description' => 'required'
         ]);
 
+        // jika validasi gagal maka akan return false
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
@@ -30,8 +32,15 @@ class AuthorController extends Controller
             ]);
         }
 
+        // mengambil hasil validasi request yang diinput
         $validated = $validator->validated();
-        $validated['photo'] = 'images/authors/no_image.png';
+
+        // jika tidak ada gambar yang diinputkan, maka default url akan diubah
+        $validated['photo'] = $request->getSchemeAndHttpHost() . '/storage/' . 'images/no_image.png';
+
+        /* jika terdapat input gambar, maka gambar akan disimpan
+        ke storage dan value photo akan diubah menjadi url
+        dari gambar yang diinputkan */
         if ($request->hasFile('photo')) {
             $photo = $request->getSchemeAndHttpHost() . '/storage/' . $request->file('photo')->store('images', 'public');
             $validated['photo'] = $photo;
