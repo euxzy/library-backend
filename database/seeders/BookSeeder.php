@@ -25,7 +25,8 @@ class BookSeeder extends Seeder
             'type' => 'Non-Fantasy',
             'publisher' => 'PT. Ini Publisher',
             'published_at' => '2021-12-02',
-            'isbn' => 9827178201283,
+            'isbn' => '9827178201283',
+            'photo' => 'http://ini-photo.id/buku-untuk-dibaca',
             'description' => 'Ini adalah deskripsi dari buka berjudul Buku Untuk Dibaca yang ditulis oleh Fulan'
         ]);
     }

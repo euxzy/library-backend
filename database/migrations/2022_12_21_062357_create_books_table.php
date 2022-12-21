@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('publisher', 100);
             $table->date('published_at');
             $table->string('isbn', 13);
+            $table->string('photo', 100);
             $table->text('description');
             $table->timestamps();
         });
