@@ -24,7 +24,7 @@ return new class extends Migration
             $table->enum('type', ['Non-Fantasy', 'Fantasy']);
             $table->string('publisher', 100);
             $table->date('published_at');
-            $table->integer('isbn');
+            $table->string('isbn', 13);
             $table->text('description');
             $table->timestamps();
         });
