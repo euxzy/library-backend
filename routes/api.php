@@ -33,4 +33,5 @@ Route::prefix('/category')
     ->controller(CategoryController::class)
     ->group(function () {
         Route::post('/create', 'store');
+        Route::post('/update/{id}', 'update');
     });
