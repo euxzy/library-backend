@@ -102,4 +102,34 @@ class CategoryController extends Controller
             'message' => 'Update Category Success!'
         ]);
     }
+
+    public function destroy(Request $request, $id)
+    {
+        // mencari data category berdasarkan id
+        $category = Category::query()->find($id);
+
+        // cek ada atau tidak nya author di database
+        if (!$category) {
+            return response()->json([
+                'status' => false,
+                'message' => '404 Not Found!'
+            ]);
+        }
+
+        // mendapatkan path file dari photo lama yang ada di database
+        $oldLogo = Str::of($category->logo)->remove($request->getSchemeAndHttpHost() . '/storage');
+        // cek apakah gambar ada di storage
+        if (Storage::disk('public')->exists($oldLogo)) {
+            // jika ada, maka akan menghapus gambar dari storage
+            Storage::disk('public')->delete($oldLogo);
+        }
+
+        // menghapus data category dari database
+        $category->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Delete Data Category Success!'
+        ]);
+    }
 }
