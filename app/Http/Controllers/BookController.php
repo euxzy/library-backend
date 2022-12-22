@@ -168,7 +168,7 @@ class BookController extends Controller
                  * bisa tampil di data buku
                  */
                 $book['author'] = $authors->filter(fn ($author) => $author->id == $book->id_author);
-                $book['category'] = $categories->filter(fn ($category) => $category->id, $book->id_category);
+                $book['category'] = $categories->filter(fn ($category) => $category->id == $book->id_category);
 
                 /**
                  * mengecualikan data yang tidak ingin ditampilkan
