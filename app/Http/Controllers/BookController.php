@@ -203,6 +203,13 @@ class BookController extends Controller
         $categories = Category::query()->get(); // mengambil semua data author
         $book = Book::query()->find($id); // mengambiil data buku berdasarkan id
 
+        if (!$book) {
+            return response()->json([
+                'status' => false,
+                'message' => '404 Not Found!'
+            ]);
+        }
+
         /**
          * menambahkan data author dan category agar
          * bisa tampil di data buku
