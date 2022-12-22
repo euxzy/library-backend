@@ -24,4 +24,5 @@ Route::prefix('/author')
     ->controller(AuthorController::class)
     ->group(function () {
         Route::post('/create', 'store');
+        Route::post('/update/{id}', 'update');
     });
