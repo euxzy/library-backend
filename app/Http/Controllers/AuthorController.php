@@ -60,8 +60,8 @@ class AuthorController extends Controller
         // mencari data author berdasarkan id
         $author = Author::query()->find($id);
 
-        // cek ada atau tidak nya author
-        if ($id != $author->id) {
+        // cek ada atau tidak nya author di database
+        if (!$author) {
             return response()->json([
                 'status' => false,
                 'message' => '404 Not Found!'
@@ -112,6 +112,36 @@ class AuthorController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Update Author Success!'
+        ]);
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        // mencari data author berdasarkan id
+        $author = Author::query()->find($id);
+
+        // cek ada atau tidak nya author di database
+        if (!$author) {
+            return response()->json([
+                'status' => false,
+                'message' => '404 Not Found!'
+            ]);
+        }
+
+        // mendapatkan path file dari photo lama yang ada di database
+        $oldPhoto = Str::of($author->photo)->remove($request->getSchemeAndHttpHost() . '/storage');
+        // cek apakah gambar ada di storage
+        if (Storage::disk('public')->exists($oldPhoto)) {
+            // jika ada, maka akan menghapus gambar dari storage
+            Storage::disk('public')->delete($oldPhoto);
+        }
+
+        // menghapus data author dari database
+        $author->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Delete Data Author Success!'
         ]);
     }
 }

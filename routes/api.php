@@ -25,4 +25,5 @@ Route::prefix('/author')
     ->group(function () {
         Route::post('/create', 'store');
         Route::post('/update/{id}', 'update');
+        Route::delete('/delete/{id}', 'destroy');
     });
