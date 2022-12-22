@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,14 @@ Route::prefix('/author')
 
 Route::prefix('/category')
     ->controller(CategoryController::class)
+    ->group(function () {
+        Route::post('/create', 'store');
+        Route::post('/update/{id}', 'update');
+        Route::delete('/delete/{id}', 'destroy');
+    });
+
+Route::prefix('/book')
+    ->controller(BookController::class)
     ->group(function () {
         Route::post('/create', 'store');
         Route::post('/update/{id}', 'update');
