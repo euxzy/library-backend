@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Author;
 use App\Models\Book;
+use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -42,9 +44,11 @@ class BookController extends Controller
         // jika tidak ada gambar yang diinputkan, maka default url akan diubah
         $validated['photo'] = $request->getSchemeAndHttpHost() . '/storage/' . 'images/no_image.png';
 
-        /* jika terdapat input gambar, maka gambar akan disimpan
-        ke storage dan value photo akan diubah menjadi url
-        dari gambar yang diinputkan */
+        /** 
+         * jika terdapat input gambar, maka gambar akan disimpan
+         * ke storage dan value photo akan diubah menjadi url
+         * dari gambar yang diinputkan
+         */
         if ($request->hasFile('photo')) {
             $photo = $request->getSchemeAndHttpHost() . '/storage/' . $request->file('photo')->store('images', 'public');
             $validated['photo'] = $photo;
@@ -99,9 +103,11 @@ class BookController extends Controller
         // mengambil hasil validasi request yang diinput
         $validated = $validator->validated();
 
-        /* jika terdapat input gambar, maka gambar akan disimpan
-        ke storage dan value photo akan diubah menjadi url
-        dari gambar yang diinputkan */
+        /** 
+         * jika terdapat input gambar, maka gambar akan disimpan
+         * ke storage dan value photo akan diubah menjadi url
+         * dari gambar yang diinputkan 
+         */
         if ($request->hasFile('photo')) {
             // mendapatkan path file dari photo lama yang ada di database
             $oldPhoto = Str::of($book->photo)->remove($request->getSchemeAndHttpHost() . '/storage');
@@ -148,6 +154,46 @@ class BookController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Delete Data Book Success!'
+        ]);
+    }
+
+    public function index()
+    {
+        $authors = Author::query()->get(); // mengambil semua data author
+        $categories = Category::query()->get(); // mengambil semua data author
+        $books = Book::query()->get() // mengambil semua data buku
+            ->map(function ($book) use ($categories, $authors) {
+                /**
+                 * menambahkan data author dan category agar
+                 * bisa tampil di data buku
+                 */
+                $book['author'] = $authors->filter(fn ($author) => $author->id == $book->id_author);
+                $book['category'] = $categories->filter(fn ($category) => $category->id, $book->id_category);
+
+                /**
+                 * mengecualikan data yang tidak ingin ditampilkan
+                 */
+                $book->author->makeHidden([
+                    'created_at',
+                    'updated_at'
+                ]);
+                $book->category->makeHidden([
+                    'created_at',
+                    'updated_at'
+                ]);
+
+                return $book;
+            });
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Get Data Success!',
+            'data' => $books->makeHidden([
+                'id_author',
+                'id_category',
+                'created_at',
+                'updated_at'
+            ])
         ]);
     }
 }
