@@ -196,4 +196,41 @@ class BookController extends Controller
             ])
         ]);
     }
+
+    public function show($id)
+    {
+        $authors = Author::query()->get(); // mengambil semua data author
+        $categories = Category::query()->get(); // mengambil semua data author
+        $book = Book::query()->find($id); // mengambiil data buku berdasarkan id
+
+        /**
+         * menambahkan data author dan category agar
+         * bisa tampil di data buku
+         */
+        $book['author'] = $authors->filter(fn ($author) => $author->id == $book->id_author);
+        $book['category'] = $categories->filter(fn ($category) => $category->id == $book->id_category);
+
+        /**
+         * mengecualikan data yang tidak ingin ditampilkan
+         */
+        $book->author->makeHidden([
+            'created_at',
+            'updated_at'
+        ]);
+        $book->category->makeHidden([
+            'created_at',
+            'updated_at'
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Get Data Success!',
+            'data' => $book->makeHidden([
+                'id_author',
+                'id_category',
+                'created_at',
+                'updated_at'
+            ])
+        ]);
+    }
 }
