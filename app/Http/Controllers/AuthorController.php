@@ -86,12 +86,12 @@ class AuthorController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Add author failed!'
+                'message' => 'Update author failed!'
             ]);
         }
 
         // mengambil hasil validasi request yang diinput
-        $validated = $validator->getData();
+        $validated = $validator->validated();
 
         /* jika terdapat input gambar, maka gambar akan disimpan
         ke storage dan value photo akan diubah menjadi url
