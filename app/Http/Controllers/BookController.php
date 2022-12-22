@@ -54,7 +54,7 @@ class BookController extends Controller
             $validated['photo'] = $photo;
         }
 
-        Book::create($validated); // menambahkan data ke database
+        Book::create($validated);
         return response()->json([
             'status' => true,
             'message' => 'Add Book Success!',
@@ -75,8 +75,6 @@ class BookController extends Controller
             ]);
         }
 
-
-        // validasi request yang diinputkan
         $validator = Validator::make($request->all(), [
             'name' => 'max:100',
             'id_author' => 'numeric',
@@ -92,7 +90,6 @@ class BookController extends Controller
             'description' => 'min:5'
         ]);
 
-        // jika validasi gagal maka akan return false
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
@@ -120,7 +117,7 @@ class BookController extends Controller
             $validated['photo'] = $photo;
         }
 
-        $book->update($validated); // update data ke database
+        $book->update($validated);
         return response()->json([
             'status' => true,
             'message' => 'Update Author Success!'
@@ -129,10 +126,8 @@ class BookController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        // mencari data buku berdasarkan id
         $book = Book::query()->find($id);
 
-        // cek ada atau tidak nya buku di database
         if (!$book) {
             return response()->json([
                 'status' => false,
@@ -148,7 +143,6 @@ class BookController extends Controller
             Storage::disk('public')->delete($oldPhoto);
         }
 
-        // menghapus data buku dari database
         $book->delete();
 
         return response()->json([
@@ -161,26 +155,27 @@ class BookController extends Controller
     {
         $authors = Author::query()->get(); // mengambil semua data author
         $categories = Category::query()->get(); // mengambil semua data author
+
+        /**
+         * mengecualikan data yang tidak ingin ditampilkan
+         */
+        $authors->makeHidden([
+            'created_at',
+            'updated_at'
+        ]);
+        $categories->makeHidden([
+            'created_at',
+            'updated_at'
+        ]);
+
         $books = Book::query()->get() // mengambil semua data buku
             ->map(function ($book) use ($categories, $authors) {
                 /**
                  * menambahkan data author dan category agar
                  * bisa tampil di data buku
                  */
-                $book['author'] = $authors->filter(fn ($author) => $author->id == $book->id_author);
-                $book['category'] = $categories->filter(fn ($category) => $category->id == $book->id_category);
-
-                /**
-                 * mengecualikan data yang tidak ingin ditampilkan
-                 */
-                $book->author->makeHidden([
-                    'created_at',
-                    'updated_at'
-                ]);
-                $book->category->makeHidden([
-                    'created_at',
-                    'updated_at'
-                ]);
+                $book['author'] = $authors->filter(fn ($author) => $author->id == $book->id_author)->first();
+                $book['category'] = $categories->filter(fn ($category) => $category->id == $book->id_category)->first();
 
                 return $book;
             });
@@ -199,9 +194,9 @@ class BookController extends Controller
 
     public function show($id)
     {
-        $authors = Author::query()->get(); // mengambil semua data author
-        $categories = Category::query()->get(); // mengambil semua data author
-        $book = Book::query()->find($id); // mengambiil data buku berdasarkan id
+        $authors = Author::query()->get();
+        $categories = Category::query()->get();
+        $book = Book::query()->find($id);
 
         if (!$book) {
             return response()->json([
@@ -211,23 +206,23 @@ class BookController extends Controller
         }
 
         /**
+         * mengecualikan data yang tidak ingin ditampilkan
+         */
+        $authors->makeHidden([
+            'created_at',
+            'updated_at'
+        ]);
+        $categories->makeHidden([
+            'created_at',
+            'updated_at'
+        ]);
+
+        /**
          * menambahkan data author dan category agar
          * bisa tampil di data buku
          */
-        $book['author'] = $authors->filter(fn ($author) => $author->id == $book->id_author);
-        $book['category'] = $categories->filter(fn ($category) => $category->id == $book->id_category);
-
-        /**
-         * mengecualikan data yang tidak ingin ditampilkan
-         */
-        $book->author->makeHidden([
-            'created_at',
-            'updated_at'
-        ]);
-        $book->category->makeHidden([
-            'created_at',
-            'updated_at'
-        ]);
+        $book['author'] = $authors->filter(fn ($author) => $author->id == $book->id_author)->first();
+        $book['category'] = $categories->filter(fn ($category) => $category->id == $book->id_category)->first();
 
         return response()->json([
             'status' => true,
