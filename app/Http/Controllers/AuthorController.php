@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Author;
+use App\Models\Book;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -126,7 +127,20 @@ class AuthorController extends Controller
 
     public function index()
     {
-        $authors = Author::query()->get();
+        $books = Book::query()->get();
+        $books->makeHidden([
+            'id_author',
+            'id_category',
+            'created_at',
+            'updated_at'
+        ]);
+
+        $authors = Author::query()->get()
+            ->map(function ($author) use ($books) {
+                $author['books'] = $books->filter(fn ($book) => $book->id_author == $author->id);
+
+                return $author;
+            });
 
         return response()->json([
             'status' => true,
