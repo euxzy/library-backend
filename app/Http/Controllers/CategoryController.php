@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
 use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -130,6 +131,32 @@ class CategoryController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Delete Data Category Success!'
+        ]);
+    }
+
+    public function index()
+    {
+        $books = Book::query()->get();
+        $books->makeHidden([
+            'id_author',
+            'id_category',
+            'created_at',
+            'updated_at'
+        ]);
+
+        $categories = Category::query()->get()
+            ->map(function ($category) use ($books) {
+                $category['books'] = $books->filter(fn ($book) => $book->id_category == $category['id']);
+                return $category;
+            });
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Get Data Success!',
+            'data' => $categories->makeHidden([
+                'created_at',
+                'updated_at'
+            ])
         ]);
     }
 }
