@@ -36,18 +36,14 @@ class AuthorController extends Controller
         // mengambil hasil validasi request yang diinput
         $validated = $validator->validated();
 
-        // jika tidak ada gambar yang diinputkan, maka default url akan diubah
         $validated['photo'] = $request->getSchemeAndHttpHost() . '/storage/' . 'images/no_image.png';
 
-        /* jika terdapat input gambar, maka gambar akan disimpan
-        ke storage dan value photo akan diubah menjadi url
-        dari gambar yang diinputkan */
         if ($request->hasFile('photo')) {
             $photo = $request->getSchemeAndHttpHost() . '/storage/' . $request->file('photo')->store('images', 'public');
             $validated['photo'] = $photo;
         }
 
-        Author::create($validated); // menambahkan data ke database
+        Author::create($validated);
         return response()->json([
             'status' => true,
             'message' => 'Add author success!',
@@ -57,10 +53,8 @@ class AuthorController extends Controller
 
     public function update(Request $request, $id)
     {
-        // mencari data author berdasarkan id
         $author = Author::query()->find($id);
 
-        // cek ada atau tidak nya author di database
         if (!$author) {
             return response()->json([
                 'status' => false,
@@ -68,8 +62,6 @@ class AuthorController extends Controller
             ]);
         }
 
-
-        // validasi request yang diinputkan
         $validator = Validator::make($request->all(), [
             'name' => 'max:50',
             'gender' => '',
@@ -90,25 +82,18 @@ class AuthorController extends Controller
             ]);
         }
 
-        // mengambil hasil validasi request yang diinput
         $validated = $validator->validated();
 
-        /* jika terdapat input gambar, maka gambar akan disimpan
-        ke storage dan value photo akan diubah menjadi url
-        dari gambar yang diinputkan */
         if ($request->hasFile('photo')) {
-            // mendapatkan path file dari photo lama yang ada di database
             $oldPhoto = Str::of($author->photo)->remove($request->getSchemeAndHttpHost() . '/storage');
-            // cek apakah gambar ada di storage
             if (Storage::disk('public')->exists($oldPhoto)) {
-                // jika ada, maka akan menghapus gambar lama
                 Storage::disk('public')->delete($oldPhoto);
             }
             $photo = $request->getSchemeAndHttpHost() . '/storage/' . $request->file('photo')->store('images', 'public');
             $validated['photo'] = $photo;
         }
 
-        $author->update($validated); // update data ke database
+        $author->update($validated);
         return response()->json([
             'status' => true,
             'message' => 'Update Author Success!'
@@ -117,10 +102,8 @@ class AuthorController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        // mencari data author berdasarkan id
         $author = Author::query()->find($id);
 
-        // cek ada atau tidak nya author di database
         if (!$author) {
             return response()->json([
                 'status' => false,
@@ -128,15 +111,11 @@ class AuthorController extends Controller
             ]);
         }
 
-        // mendapatkan path file dari photo lama yang ada di database
         $oldPhoto = Str::of($author->photo)->remove($request->getSchemeAndHttpHost() . '/storage');
-        // cek apakah gambar ada di storage
         if (Storage::disk('public')->exists($oldPhoto)) {
-            // jika ada, maka akan menghapus gambar dari storage
             Storage::disk('public')->delete($oldPhoto);
         }
 
-        // menghapus data author dari database
         $author->delete();
 
         return response()->json([
@@ -153,8 +132,20 @@ class AuthorController extends Controller
             'status' => true,
             'message' => 'Get Data Success!',
             'data' => $authors->makeHidden([
-                'id_author',
-                'id_category',
+                'created_at',
+                'updated_at'
+            ])
+        ]);
+    }
+
+    public function show($id)
+    {
+        $author = Author::query()->find($id);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Get Data Success!',
+            'data' => $author->makeHidden([
                 'created_at',
                 'updated_at'
             ])
