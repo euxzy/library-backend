@@ -154,7 +154,23 @@ class AuthorController extends Controller
 
     public function show($id)
     {
+        $books = Book::query()->get();
+        $books->makeHidden([
+            'id_author',
+            'id_category',
+            'created_at',
+            'updated_at'
+        ]);
+
         $author = Author::query()->find($id);
+        if (!$author) {
+            return response()->json([
+                'status' => false,
+                'message' => '404 Not Found!'
+            ]);
+        }
+
+        $author['books'] = $books->filter(fn ($book) => $book->id_author == $author->id);
 
         return response()->json([
             'status' => true,
