@@ -28,21 +28,16 @@ class CategoryController extends Controller
             ]);
         }
 
-        // mengambil hasil validasi request yang diinput
         $validated = $validator->validated();
 
-        // jika tidak ada gambar yang diinputkan, maka default url akan diubah
         $validated['logo'] = $request->getSchemeAndHttpHost() . '/storage/' . 'images/logo.png';
 
-        /* jika terdapat input gambar, maka gambar akan disimpan
-        ke storage dan value photo akan diubah menjadi url
-        dari gambar yang diinputkan */
         if ($request->hasFile('logo')) {
             $logo = $request->getSchemeAndHttpHost() . '/storage/' . $request->file('logo')->store('images', 'public');
             $validated['logo'] = $logo;
         }
 
-        Category::create($validated); // menambahkan data ke database
+        Category::create($validated);
         return response()->json([
             'status' => true,
             'message' => 'Add category success!',
@@ -52,7 +47,6 @@ class CategoryController extends Controller
 
     public function update(Request $request, $id)
     {
-        // mencari data category berdasarkan id
         $category = Category::query()->find($id);
 
         // cek ada atau tidak nya category di database
@@ -63,8 +57,6 @@ class CategoryController extends Controller
             ]);
         }
 
-
-        // validasi request yang diinputkan
         $validator = Validator::make($request->all(), [
             'name' => 'max:50',
             'logo' => 'image|max:2048',
@@ -79,25 +71,18 @@ class CategoryController extends Controller
             ]);
         }
 
-        // mengambil hasil validasi request yang diinput
         $validated = $validator->validated();
 
-        /* jika terdapat input gambar, maka gambar akan disimpan
-        ke storage dan value photo akan diubah menjadi url
-        dari gambar yang diinputkan */
         if ($request->hasFile('logo')) {
-            // mendapatkan path file dari photo lama yang ada di database
             $oldLogo = Str::of($category->logo)->remove($request->getSchemeAndHttpHost() . '/storage');
-            // cek apakah gambar ada di storage
             if (Storage::disk('public')->exists($oldLogo)) {
-                // jika ada, maka akan menghapus gambar lama
                 Storage::disk('public')->delete($oldLogo);
             }
             $logo = $request->getSchemeAndHttpHost() . '/storage/' . $request->file('logo')->store('images', 'public');
             $validated['logo'] = $logo;
         }
 
-        $category->update($validated); // update data ke database
+        $category->update($validated);
         return response()->json([
             'status' => true,
             'message' => 'Update Category Success!'
@@ -106,10 +91,8 @@ class CategoryController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        // mencari data category berdasarkan id
         $category = Category::query()->find($id);
 
-        // cek ada atau tidak nya author di database
         if (!$category) {
             return response()->json([
                 'status' => false,
@@ -117,7 +100,6 @@ class CategoryController extends Controller
             ]);
         }
 
-        // mendapatkan path file dari photo lama yang ada di database
         $oldLogo = Str::of($category->logo)->remove($request->getSchemeAndHttpHost() . '/storage');
         // cek apakah gambar ada di storage
         if (Storage::disk('public')->exists($oldLogo)) {
@@ -125,7 +107,6 @@ class CategoryController extends Controller
             Storage::disk('public')->delete($oldLogo);
         }
 
-        // menghapus data category dari database
         $category->delete();
 
         return response()->json([
@@ -154,6 +135,36 @@ class CategoryController extends Controller
             'status' => true,
             'message' => 'Get Data Success!',
             'data' => $categories->makeHidden([
+                'created_at',
+                'updated_at'
+            ])
+        ]);
+    }
+
+    public function show($id)
+    {
+        $books = Book::query()->get();
+        $books->makeHidden([
+            'id_author',
+            'id_category',
+            'created_at',
+            'updated_at'
+        ]);
+
+        $category = Category::query()->where('id', $id)->first();
+        if (!$category) {
+            return response()->json([
+                'status' => false,
+                'message' => '404 Not Found!'
+            ]);
+        }
+
+        $category['books'] = $books->filter(fn ($book) => $book->id_author == $category->id);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Get Data Success!',
+            'data' => $category->makeHidden([
                 'created_at',
                 'updated_at'
             ])
