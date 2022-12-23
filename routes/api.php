@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('/author')
     ->controller(AuthorController::class)
     ->group(function () {
+        Route::get('/', 'index');
         Route::post('/create', 'store');
         Route::post('/update/{id}', 'update');
         Route::delete('/delete/{id}', 'destroy');

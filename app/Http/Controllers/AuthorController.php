@@ -144,4 +144,20 @@ class AuthorController extends Controller
             'message' => 'Delete Data Author Success!'
         ]);
     }
+
+    public function index()
+    {
+        $authors = Author::query()->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Get Data Success!',
+            'data' => $authors->makeHidden([
+                'id_author',
+                'id_category',
+                'created_at',
+                'updated_at'
+            ])
+        ]);
+    }
 }
