@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CategoryController;
@@ -21,15 +22,17 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
+Route::post("/login", [AuthController::class, "login"]);
+Route::get("/me", [AuthController::class, "getUser"])->middleware("auth:sanctum");
 
 Route::prefix('/author')
     ->controller(AuthorController::class)
     ->group(function () {
         Route::get('/', 'index');
         Route::get('/{id}', 'show');
-        Route::post('/create', 'store');
-        Route::post('/update/{id}', 'update');
-        Route::delete('/delete/{id}', 'destroy');
+        Route::post('/create', 'store')->middleware("auth:sanctum");
+        Route::post('/update/{id}', 'update')->middleware("auth:sanctum");
+        Route::delete('/delete/{id}', 'destroy')->middleware("auth:sanctum");
     });
 
 Route::prefix('/category')
@@ -37,9 +40,9 @@ Route::prefix('/category')
     ->group(function () {
         Route::get('/', 'index');
         Route::get('/{id}', 'show');
-        Route::post('/create', 'store');
-        Route::post('/update/{id}', 'update');
-        Route::delete('/delete/{id}', 'destroy');
+        Route::post('/create', 'store')->middleware("auth:sanctum");
+        Route::post('/update/{id}', 'update')->middleware("auth:sanctum");
+        Route::delete('/delete/{id}', 'destroy')->middleware("auth:sanctum");
     });
 
 Route::prefix('/book')
@@ -47,7 +50,7 @@ Route::prefix('/book')
     ->group(function () {
         Route::get('/', 'index');
         Route::get('/{id}', 'show');
-        Route::post('/create', 'store');
-        Route::post('/update/{id}', 'update');
-        Route::delete('/delete/{id}', 'destroy');
+        Route::post('/create', 'store')->middleware("auth:sanctum");
+        Route::post('/update/{id}', 'update')->middleware("auth:sanctum");
+        Route::delete('/delete/{id}', 'destroy')->middleware("auth:sanctum");
     });

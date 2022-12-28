@@ -3,7 +3,10 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -23,5 +26,13 @@ class DatabaseSeeder extends Seeder
         $this->call(AuthorSeeder::class);
         $this->call(CategorySeeder::class);
         $this->call(BookSeeder::class);
+
+        User::query()->create([
+            'name' => 'Fulan',
+            'email' => 'fulan@mail.com',
+            'password' => 'fulan123',
+            'email_verified_at' => now(),
+            'remember_token' => Str::random(10)
+        ]);
     }
 }
